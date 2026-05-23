@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Leads - Espanha</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .stat-card h3 {
+            font-size: 1em;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .stat-card .number {
+            font-size: 3em;
+            font-weight: bold;
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 12px 25px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        .classificacao {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            display: inline-block;
+            font-size: 0.9em;
+        }
+
+        .btn-voltar {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 12px 25px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-voltar:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+            color: #667eea;
+        }
+
+        .erro {
+            text-align: center;
+            padding: 40px;
+            color: #ff4757;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="btn-voltar">← Voltar ao Formulário</a>
+        
+        <header>
+            <h1>🇪🇸 Dashboard de Leads - Espanha</h1>
+            <p>Gestão completa de leads cadastrados</p>
+        </header>
+
+        <div class="stats">
+            <div class="stat-card">
+                <h3>📊 Total de Leads</h3>
+                <div class="number" id="total-leads">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>🔥 Leads Quentes</h3>
+                <div class="number" id="leads-quentes">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>🟡 Leads Mornos</h3>
+                <div class="number" id="leads-mornos">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>❄️ Leads Frios</h3>
+                <div class="number" id="leads-frios">0</div>
+            </div>
+        </div>
+
+        <div class="filters">
+            <button class="filter-btn active" onclick="filtrarLeads('todos')">Todos</button>
+            <button class="filter-btn" onclick="filtrarLeads('quente')">🔥 Quentes</button>
+            <button class="filter-btn" onclick="filtrarLeads('morno')">🟡 Mornos</button>
+            <button class="filter-btn" onclick="filtrarLeads('frio')">❄️ Frios</button>
+        </div>
+
+        <div id="leads-container">
+            <div class="loading">Carregando leads...</div>
+        </div>
+    </div>
+
+    <script>
+        let todosLeads = [];
+
+        async function carregarLeads() {
+            try {
+                const response = await fetch('/api/leads');
+                if (!response.ok) throw new Error('Erro na API');
+                
+                todosLeads = await response.json();
+                atualizarEstatisticas();
+                exibirLeads(todosLeads);
+            } catch (error) {
+                console.error('Erro:', error);
+                document.getElementById('leads-container').innerHTML = 
+                    '<div class="erro">❌ Erro ao carregar leads. Verifique se o servidor está rodando.</div>';
+            }
+        }
+
+        function atualizarEstatisticas() {
+            document.getElementById('total-leads').textContent = todosLeads.length;
+            
+            const quentes = todosLeads.filter(l => l.classificacao && l.classificacao.includes('QUENTE')).length;
+            const mornos = todosLeads.filter(l => l.classificacao && l.classificacao.includes('MORNO')).length;
+            const frios = todosLeads.filter(l => l.classificacao && l.classificacao.includes('FRIO')).length;
+            
+            document.getElementById('leads-quentes').textContent = quentes;
+            document.getElementById('leads-mornos').textContent = mornos;
+            document.getElementById('leads-frios').textContent = frios;
+        }
+
+        function exibirLeads(leads) {
+            const container = document.getElementById('leads-container');
+            
+            if (leads.length === 0) {
+                container.innerHTML = '<p style="text-align: center; padding: 40px; color: #999;">Nenhum lead cadastrado ainda</p>';
+                return;
+            }
+
+            const html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Email</th>
+                            <th>WhatsApp</th>
+                            <th>Tipo de Visto</th>
+                            <th>Profissão</th>
+                            <th>Renda</th>
+                            <th>Prazo</th>
+                            <th>Score</th>
+                            <th>Classificação</th>
+                            <th>Data</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${leads.map(lead => `
+                            <tr>
+                                <td><strong>${lead.nome}</strong></td>
+                                <td>${lead.email}</td>
+                                <td>${lead.whatsapp}</td>
+                                <td>${lead.tipo_visto}</td>
+                                <td>${lead.profissao}</td>
+                                <td>${lead.renda}</td>
+                                <td>${lead.prazo}</td>
+                                <td><strong>${lead.score}</strong></td>
+                                <td><span class="classificacao">${lead.classificacao}</span></td>
+                                <td>${new Date(lead.data_cadastro).toLocaleString('pt-BR')}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        function filtrarLeads(filtro) {
+            // Atualiza botões ativos
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Filtra leads
+            if (filtro === 'todos') {
+                exibirLeads(todosLeads);
+            } else {
+                const filtroUpper = filtro.toUpperCase();
+                const leadsFiltrados = todosLeads.filter(lead => 
+                    lead.classificacao && lead.classificacao.includes(filtroUpper)
+                );
+                exibirLeads(leadsFiltrados);
+            }
+        }
+
+        // Carrega os leads ao abrir a página
+        carregarLeads();
+
+        // Atualiza a cada 30 segundos
+        setInterval(carregarLeads, 30000);
+    </script>
+</body>
+</html>

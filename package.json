@@ -1,0 +1,15 @@
+{
+  "name": "landing-visto-espanha",
+  "version": "1.0.0",
+  "description": "Landing page para captura de leads - Visto Espanha",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

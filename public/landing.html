@@ -1,282 +1,269 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Descubra Seu Visto Ideal para Espanha | Consultoria Especializada</title>
-    <meta name="description" content="Consultoria completa para obter seu visto e residência na Espanha. Teste gratuito para descobrir qual visto combina com seu perfil.">
+    <title>Assessoria para Visto Espanhol - Realize seu sonho europeu</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
         .hero {
-            background: white;
-            border-radius: 20px;
-            padding: 60px 40px;
-            margin: 40px 0;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 20px;
             text-align: center;
         }
-
-        h1 {
-            font-size: 2.5rem;
-            color: #2d3748;
+        .hero h1 {
+            font-size: 2.5em;
             margin-bottom: 20px;
-            line-height: 1.2;
         }
-
-        .subtitle {
-            font-size: 1.3rem;
-            color: #4a5568;
-            margin-bottom: 40px;
+        .hero p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
         }
-
-        .form-section {
-            background: #f7fafc;
-            padding: 40px;
-            border-radius: 15px;
-            max-width: 600px;
+        .container {
+            max-width: 800px;
             margin: 0 auto;
+            padding: 40px 20px;
         }
-
+        .form-section {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-top: -50px;
+        }
         .form-group {
             margin-bottom: 25px;
         }
-
         label {
             display: block;
-            font-weight: 600;
             margin-bottom: 8px;
-            color: #2d3748;
-            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
         }
-
-        input, select {
+        label .required {
+            color: #e74c3c;
+        }
+        input, select, textarea {
             width: 100%;
-            padding: 14px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 1rem;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
             transition: border-color 0.3s;
         }
-
-        input:focus, select:focus {
+        input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #667eea;
         }
-
-        .submit-btn {
+        .btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            padding: 15px 40px;
             border: none;
-            padding: 18px 40px;
-            font-size: 1.2rem;
-            font-weight: 600;
-            border-radius: 10px;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
             cursor: pointer;
             width: 100%;
-            margin-top: 20px;
             transition: transform 0.2s;
         }
-
-        .submit-btn:hover {
+        .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
         }
-
         .benefits {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 30px;
-            margin: 50px 0;
+            margin: 40px 0;
         }
-
         .benefit-card {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             text-align: center;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
         }
-
         .benefit-card h3 {
             color: #667eea;
             margin-bottom: 15px;
-            font-size: 1.3rem;
         }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 1.8rem;
-            }
-
-            .subtitle {
-                font-size: 1.1rem;
-            }
-
-            .hero {
-                padding: 40px 20px;
-            }
-
-            .form-section {
-                padding: 30px 20px;
-            }
+        .success-message {
+            display: none;
+            background: #d4edda;
+            color: #155724;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .error-message {
+            display: none;
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
+    <div class="hero">
+        <h1>🇪🇸 Realize seu Sonho de Viver na Espanha</h1>
+        <p>Assessoria completa para obtenção de vistos espanhóis</p>
+    </div>
+
     <div class="container">
-        <div class="hero">
-            <h1>🇪🇸 Descubra Qual Visto é Perfeito Para Você Viver na Espanha</h1>
-            <p class="subtitle">Em 2 minutos, receba um diagnóstico personalizado e saiba exatamente qual caminho seguir</p>
+        <div class="form-section">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #667eea;">Solicite uma Avaliação Gratuita</h2>
+            
+            <form id="leadForm">
+                <div class="form-group">
+                    <label for="nomeCompleto">Nome completo <span class="required">*</span></label>
+                    <input type="text" id="nomeCompleto" name="nomeCompleto" required>
+                </div>
 
-            <div class="form-section">
-                <form id="vistoForm">
-                    <div class="form-group">
-                        <label for="nome">Nome completo *</label>
-                        <input type="text" id="nome" name="nome" required>
-                    </div>
+                <div class="form-group">
+                    <label for="email">E-mail <span class="required">*</span></label>
+                    <input type="email" id="email" name="email" required>
+                </div>
 
-                    <div class="form-group">
-                        <label for="email">E-mail *</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
+                <div class="form-group">
+                    <label for="whatsapp">WhatsApp (com DDD) <span class="required">*</span></label>
+                    <input type="tel" id="whatsapp" name="whatsapp" placeholder="(11) 99999-9999" required>
+                </div>
 
-                    <div class="form-group">
-                        <label for="telefone">WhatsApp (com DDD) *</label>
-                        <input type="tel" id="telefone" name="telefone" placeholder="(11) 98765-4321" required>
-                    </div>
+                <div class="form-group">
+                    <label for="profissao">Profissão / Área de atuação</label>
+                    <input type="text" id="profissao" name="profissao">
+                </div>
 
-                    <div class="form-group">
-                        <label for="jaEstaEspanha">Você já está na Espanha? *</label>
-                        <select id="jaEstaEspanha" name="jaEstaEspanha" required>
-                            <option value="">Selecione...</option>
-                            <option value="sim">Sim, já estou na Espanha</option>
-                            <option value="nao">Não, estou no Brasil</option>
-                        </select>
-                    </div>
+                <div class="form-group">
+                    <label for="rendaMensal">Renda mensal líquida atual <span class="required">*</span></label>
+                    <input type="text" id="rendaMensal" name="rendaMensal" placeholder="R$ 0,00" required>
+                </div>
 
-                    <div class="form-group">
-                        <label for="objetivo">Qual seu principal objetivo? *</label>
-                        <select id="objetivo" name="objetivo" required>
-                            <option value="">Selecione...</option>
-                            <option value="trabalhar">Trabalhar na Espanha</option>
-                            <option value="estudar">Estudar na Espanha</option>
-                            <option value="aposentar">Me aposentar/viver de renda</option>
-                            <option value="empreender">Abrir negócio próprio</option>
-                            <option value="nomade">Trabalho remoto (nômade digital)</option>
-                            <option value="familia">Reunificação familiar</option>
-                            <option value="outros">Outros</option>
-                        </select>
-                    </div>
+                <div class="form-group">
+                    <label for="jaEstaEspanha">Você já está na Espanha? <span class="required">*</span></label>
+                    <select id="jaEstaEspanha" name="jaEstaEspanha" required>
+                        <option value="">Selecione</option>
+                        <option value="Sim">Sim</option>
+                        <option value="Não">Não</option>
+                    </select>
+                </div>
 
-                    <div class="form-group">
-                        <label for="patrimonio">Patrimônio disponível para investir *</label>
-                        <select id="patrimonio" name="patrimonio" required>
-                            <option value="">Selecione...</option>
-                            <option value="ate50k">Até R$ 50.000</option>
-                            <option value="50a100k">R$ 50.000 a R$ 100.000</option>
-                            <option value="100a200k">R$ 100.000 a R$ 200.000</option>
-                            <option value="acima200k">Acima de R$ 200.000</option>
-                        </select>
-                    </div>
+                <div class="form-group">
+                    <label for="objetivo">Qual seu principal objetivo? <span class="required">*</span></label>
+                    <select id="objetivo" name="objetivo" required>
+                        <option value="">Selecione</option>
+                        <option value="Estudar">Estudar</option>
+                        <option value="Trabalhar">Trabalhar</option>
+                        <option value="Empreender">Empreender</option>
+                        <option value="Aposentadoria/Renda passiva">Aposentadoria/Renda passiva</option>
+                        <option value="Reunificação familiar">Reunificação familiar</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                </div>
 
-                    <div class="form-group">
-                        <label for="cidadania">Tem cidadania europeia? *</label>
-                        <select id="cidadania" name="cidadania" required>
-                            <option value="">Selecione...</option>
-                            <option value="sim">Sim, tenho cidadania europeia</option>
-                            <option value="processo">Estou em processo</option>
-                            <option value="nao">Não tenho</option>
-                        </select>
-                    </div>
+                <div class="form-group">
+                    <label for="reservaFinanceira">Qual a reserva financeira possui para imigrar para a Espanha</label>
+                    <input type="text" id="reservaFinanceira" name="reservaFinanceira" placeholder="R$ 0,00">
+                </div>
 
-                    <div class="form-group">
-                        <label for="prazo">Em quanto tempo pretende se mudar? *</label>
-                        <select id="prazo" name="prazo" required>
-                            <option value="">Selecione...</option>
-                            <option value="3meses">Até 3 meses</option>
-                            <option value="6meses">3 a 6 meses</option>
-                            <option value="1ano">6 meses a 1 ano</option>
-                            <option value="flexivel">Ainda não defini</option>
-                        </select>
-                    </div>
+                <div class="form-group">
+                    <label for="quandoMudar">Quando pretende se mudar? <span class="required">*</span></label>
+                    <select id="quandoMudar" name="quandoMudar" required>
+                        <option value="">Selecione</option>
+                        <option value="Até 3 meses">Até 3 meses</option>
+                        <option value="3 a 6 meses">3 a 6 meses</option>
+                        <option value="6 a 12 meses">6 a 12 meses</option>
+                        <option value="Mais de 1 ano">Mais de 1 ano</option>
+                        <option value="Ainda não defini">Ainda não defini</option>
+                    </select>
+                </div>
 
-                    <button type="submit" class="submit-btn">
-                        Descobrir Meu Visto Ideal →
-                    </button>
-                </form>
+                <div class="form-group">
+                    <label for="cidadaniaEuropeia">Tem cidadania europeia? <span class="required">*</span></label>
+                    <select id="cidadaniaEuropeia" name="cidadaniaEuropeia" required>
+                        <option value="">Selecione</option>
+                        <option value="Sim">Sim</option>
+                        <option value="Não">Não</option>
+                        <option value="Em processo">Em processo</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn">Solicitar Avaliação Gratuita</button>
+            </form>
+
+            <div id="successMessage" class="success-message">
+                ✅ Obrigado! Entraremos em contato em breve.
+            </div>
+            <div id="errorMessage" class="error-message">
+                ❌ Erro ao enviar. Tente novamente.
             </div>
         </div>
 
         <div class="benefits">
             <div class="benefit-card">
-                <h3>✅ Diagnóstico Gratuito</h3>
-                <p>Análise completa do seu perfil sem custo</p>
+                <h3>✈️ Processo Simplificado</h3>
+                <p>Cuidamos de toda a burocracia para você</p>
             </div>
-
             <div class="benefit-card">
-                <h3>⚡ Resultado Imediato</h3>
-                <p>Receba seu relatório em até 24h</p>
+                <h3>📋 Documentação Completa</h3>
+                <p>Orientação para cada tipo de visto</p>
             </div>
-
             <div class="benefit-card">
-                <h3>🎯 100% Personalizado</h3>
-                <p>Recomendação baseada no seu caso real</p>
+                <h3>🎯 Alta Taxa de Aprovação</h3>
+                <p>Experiência comprovada em vistos espanhóis</p>
             </div>
         </div>
     </div>
 
     <script>
-        document.getElementById('vistoForm').addEventListener('submit', async function(e) {
+        document.getElementById('leadForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const formData = {
-                nome: document.getElementById('nome').value,
+                nomeCompleto: document.getElementById('nomeCompleto').value,
                 email: document.getElementById('email').value,
-                telefone: document.getElementById('telefone').value,
+                whatsapp: document.getElementById('whatsapp').value,
+                profissao: document.getElementById('profissao').value,
+                rendaMensal: document.getElementById('rendaMensal').value,
                 jaEstaEspanha: document.getElementById('jaEstaEspanha').value,
                 objetivo: document.getElementById('objetivo').value,
-                patrimonio: document.getElementById('patrimonio').value,
-                cidadania: document.getElementById('cidadania').value,
-                prazo: document.getElementById('prazo').value,
-                timestamp: new Date().toISOString()
+                reservaFinanceira: document.getElementById('reservaFinanceira').value,
+                quandoMudar: document.getElementById('quandoMudar').value,
+                cidadaniaEuropeia: document.getElementById('cidadaniaEuropeia').value
             };
 
             try {
-                const response = await fetch('/api/lead', {
+                const response = await fetch('/api/leads', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(formData)
                 });
 
                 if (response.ok) {
-                    alert('✅ Obrigado! Seu diagnóstico será enviado em até 24h.');
-                    document.getElementById('vistoForm').reset();
+                    document.getElementById('successMessage').style.display = 'block';
+                    document.getElementById('errorMessage').style.display = 'none';
+                    document.getElementById('leadForm').reset();
                 } else {
-                    alert('⚠️ Erro ao enviar. Tente novamente.');
+                    throw new Error('Erro ao enviar');
                 }
             } catch (error) {
-                console.error('Erro:', error);
-                alert('⚠️ Erro ao enviar. Verifique sua conexão.');
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('successMessage').style.display = 'none';
             }
         });
     </script>

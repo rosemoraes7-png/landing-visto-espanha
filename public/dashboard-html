@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Leads Visto Espanha</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -27,18 +23,9 @@
             max-width: 1200px;
             padding: 40px;
         }
-        .login-box {
-            max-width: 400px;
-            margin: 0 auto;
-        }
-        h1 {
-            color: #333;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
+        .login-box { max-width: 400px; margin: 0 auto; }
+        h1 { color: #333; margin-bottom: 30px; text-align: center; }
+        .form-group { margin-bottom: 20px; }
         label {
             display: block;
             color: #555;
@@ -51,12 +38,8 @@
             border: 2px solid #e0e0e0;
             border-radius: 8px;
             font-size: 16px;
-            transition: border-color 0.3s;
         }
-        input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
+        input:focus { outline: none; border-color: #667eea; }
         button {
             width: 100%;
             padding: 14px;
@@ -67,14 +50,9 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s;
         }
-        button:hover {
-            transform: translateY(-2px);
-        }
-        .dashboard {
-            display: none;
-        }
+        button:hover { transform: translateY(-2px); }
+        .dashboard { display: none; }
         .stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -88,38 +66,19 @@
             border-radius: 12px;
             text-align: center;
         }
-        .stat-card h3 {
-            font-size: 32px;
-            margin-bottom: 5px;
-        }
-        .stat-card p {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-        .actions {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-        .btn-export {
+        .stat-card h3 { font-size: 32px; margin-bottom: 5px; }
+        .stat-card p { font-size: 14px; opacity: 0.9; }
+        .actions { display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
+        .btn-export, .btn-logout {
             padding: 12px 24px;
-            background: #10b981;
-            color: white;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-        }
-        .btn-logout {
-            padding: 12px 24px;
-            background: #ef4444;
             color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
         }
+        .btn-export { background: #10b981; }
+        .btn-logout { background: #ef4444; }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -132,42 +91,29 @@
             text-align: left;
             border-bottom: 1px solid #e0e0e0;
         }
-        th {
-            background: #f8f9fa;
-            font-weight: 600;
-            color: #333;
-        }
-        tr:hover {
-            background: #f8f9fa;
-        }
-        .error {
-            color: #ef4444;
-            text-align: center;
-            margin-top: 10px;
-        }
+        th { background: #f8f9fa; font-weight: 600; color: #333; }
+        tr:hover { background: #f8f9fa; }
+        .error { color: #ef4444; text-align: center; margin-top: 10px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Login -->
         <div id="loginBox" class="login-box">
             <h1>🔐 Login Dashboard</h1>
             <div class="form-group">
-                <label for="username">Usuário</label>
+                <label>Usuário</label>
                 <input type="text" id="username" placeholder="Digite o usuário">
             </div>
             <div class="form-group">
-                <label for="password">Senha</label>
+                <label>Senha</label>
                 <input type="password" id="password" placeholder="Digite a senha">
             </div>
             <button onclick="login()">Entrar</button>
             <div id="loginError" class="error"></div>
         </div>
 
-        <!-- Dashboard -->
         <div id="dashboard" class="dashboard">
             <h1>📊 Dashboard de Leads</h1>
-            
             <div class="stats">
                 <div class="stat-card">
                     <h3 id="totalLeads">0</h3>
@@ -178,12 +124,10 @@
                     <p>Leads Hoje</p>
                 </div>
             </div>
-
             <div class="actions">
                 <button class="btn-export" onclick="exportCSV()">📥 Exportar CSV</button>
                 <button class="btn-logout" onclick="logout()">🚪 Sair</button>
             </div>
-
             <table>
                 <thead>
                     <tr>
@@ -206,14 +150,12 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const errorDiv = document.getElementById('loginError');
-
             try {
                 const response = await fetch('/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
                 });
-
                 if (response.ok) {
                     document.getElementById('loginBox').style.display = 'none';
                     document.getElementById('dashboard').style.display = 'block';
@@ -227,59 +169,31 @@
         }
 
         async function loadLeads() {
-            try {
-                const response = await fetch('/api/leads');
-                const leads = await response.json();
-                
-                document.getElementById('totalLeads').textContent = leads.length;
-                
-                const hoje = new Date().toISOString().split('T')[0];
-                const leadsHoje = leads.filter(lead => lead.created_at.startsWith(hoje));
-                document.getElementById('leadsHoje').textContent = leadsHoje.length;
-
-                const tbody = document.getElementById('leadsTable');
-                tbody.innerHTML = leads.map(lead => `
-                    <tr>
-                        <td>${lead.nome}</td>
-                        <td>${lead.email}</td>
-                        <td>${lead.whatsapp}</td>
-                        <td>${lead.cidade}</td>
-                        <td>${lead.formacao}</td>
-                        <td>${lead.objetivo}</td>
-                        <td>${new Date(lead.created_at).toLocaleString('pt-BR')}</td>
-                    </tr>
-                `).join('');
-            } catch (error) {
-                console.error('Erro ao carregar leads:', error);
-            }
+            const response = await fetch('/api/leads');
+            const leads = await response.json();
+            document.getElementById('totalLeads').textContent = leads.length;
+            const hoje = new Date().toISOString().split('T')[0];
+            const leadsHoje = leads.filter(l => l.created_at.startsWith(hoje));
+            document.getElementById('leadsHoje').textContent = leadsHoje.length;
+            document.getElementById('leadsTable').innerHTML = leads.map(lead => `
+                <tr>
+                    <td>${lead.nome}</td>
+                    <td>${lead.email}</td>
+                    <td>${lead.whatsapp}</td>
+                    <td>${lead.cidade}</td>
+                    <td>${lead.formacao}</td>
+                    <td>${lead.objetivo}</td>
+                    <td>${new Date(lead.created_at).toLocaleString('pt-BR')}</td>
+                </tr>
+            `).join('');
         }
 
         function exportCSV() {
-            fetch('/api/leads')
-                .then(res => res.json())
-                .then(leads => {
-                    let csv = 'Nome,Email,WhatsApp,Cidade,Formação,Objetivo,Data\n';
-                    leads.forEach(lead => {
-                        csv += `"${lead.nome}","${lead.email}","${lead.whatsapp}","${lead.cidade}","${lead.formacao}","${lead.objetivo}","${lead.created_at}"\n`;
-                    });
-                    
-                    const blob = new Blob([csv], { type: 'text/csv' });
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'leads-visto-espanha.csv';
-                    a.click();
-                });
+            window.location.href = '/api/export';
         }
 
         function logout() {
-            fetch('/api/logout', { method: 'POST' })
-                .then(() => {
-                    document.getElementById('loginBox').style.display = 'block';
-                    document.getElementById('dashboard').style.display = 'none';
-                    document.getElementById('username').value = '';
-                    document.getElementById('password').value = '';
-                });
+            window.location.reload();
         }
     </script>
 </body>

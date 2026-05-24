@@ -1,58 +1,89 @@
-require('dotenv').config();
 const express = require('express');
+const sqlite3 = require('sqlite3').verbose();
+const bodyParser = require('body-parser');
 const path = require('path');
+const session = require('express-session');
+
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-// Middlewares
+// Middleware
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json()); // ← IMPORTANTE: permite receber JSON
+app.use(session({
+  secret: 'otimizzai-visto-espanha-2025',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false }
+}));
 
-// "Banco de dados" temporário (em memória)
-let leads = [];
+// Conectar ao banco de dados
+const db = new sqlite3.Database('./leads.db', (err) => {
+  if (err) {
+    console.error('Erro ao conectar ao banco:', err);
+  } else {
+    console.log('✅ Conectado ao banco de dados SQLite');
+  }
+});
 
-// Rota: Página de Login
+// Rotas principais
 app.get('/', (req, res) => {
-    res.sendFile(path.resolve('views/login.html'));
+  res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
-// Rota: Autenticação
-app.post('/login', (req, res) => {
-    const { usuario, senha } = req.body;
-    
-    if (usuario === process.env.USER && senha === process.env.PASS) {
-        res.sendFile(path.resolve('views/dashboard.html'));
-    } else {
-        res.send('<h2>Login inválido. <a href="/">Tente novamente</a></h2>');
-    }
+app.get('/landing.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'landing.html'));
 });
 
-// ✨ NOVA ROTA: Receber leads do formulário
+// API - Salvar lead
 app.post('/api/leads', (req, res) => {
-    const novoLead = {
-        id: Date.now(),
-        dataHora: new Date().toLocaleString('pt-BR'),
-        ...req.body
-    };
-    
-    leads.push(novoLead);
-    
-    console.log('✅ Novo lead recebido:', novoLead);
-    
-    res.json({ 
-        success: true, 
-        message: 'Lead registrado com sucesso!',
-        lead: novoLead
-    });
+  const { nome, email, whatsapp, cidade, formacao, objetivo, outros_objetivos } = req.body;
+  
+  const sql = `INSERT INTO leads (nome, email, whatsapp, cidade, formacao, objetivo, outros_objetivos) 
+               VALUES (?, ?, ?, ?, ?, ?, ?)`;
+  
+  db.run(sql, [nome, email, whatsapp, cidade, formacao, objetivo, outros_objetivos], function(err) {
+    if (err) {
+      console.error('Erro ao salvar lead:', err);
+      return res.status(500).json({ error: 'Erro ao salvar lead' });
+    }
+    res.json({ success: true, id: this.lastID });
+  });
 });
 
-// ✨ NOVA ROTA: Listar todos os leads (para o dashboard)
+// API - Buscar todos os leads
 app.get('/api/leads', (req, res) => {
-    res.json(leads);
+  const sql = 'SELECT * FROM leads ORDER BY created_at DESC';
+  
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      console.error('Erro ao buscar leads:', err);
+      return res.status(500).json({ error: 'Erro ao buscar leads' });
+    }
+    res.json(rows);
+  });
+});
+
+// API - Login
+app.post('/api/login', (req, res) => {
+  const { username, password } = req.body;
+  
+  if (username === 'admin' && password === 'otimizzai2025') {
+    req.session.authenticated = true;
+    res.json({ success: true });
+  } else {
+    res.status(401).json({ error: 'Credenciais inválidas' });
+  }
+});
+
+// API - Logout
+app.post('/api/logout', (req, res) => {
+  req.session.destroy();
+  res.json({ success: true });
 });
 
 // Iniciar servidor
-const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
+  console.log(`🚀 Servidor rodando na porta ${PORT}`);
 });

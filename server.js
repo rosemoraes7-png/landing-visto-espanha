@@ -1,89 +1,90 @@
 const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
-const bodyParser = require('body-parser');
+const cors = require('cors');
 const path = require('path');
-const session = require('express-session');
+const fs = require('fs').promises;
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Credenciais de admin (TROCAR EM PRODUÇÃO!)
+const ADMIN_USER = 'admin';
+const ADMIN_PASSWORD = 'senha123';
+
 // Middleware
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
+app.use(express.json());
 app.use(express.static('public'));
-app.use(session({
-  secret: 'otimizzai-visto-espanha-2025',
-  resave: false,
-  saveUninitialized: false,
-  cookie: { secure: false }
-}));
 
-// Conectar ao banco de dados
-const db = new sqlite3.Database('./leads.db', (err) => {
-  if (err) {
-    console.error('Erro ao conectar ao banco:', err);
-  } else {
-    console.log('✅ Conectado ao banco de dados SQLite');
+// Caminho do arquivo de leads
+const LEADS_FILE = path.join(__dirname, 'leads.json');
+
+// Função para ler leads
+async function readLeads() {
+  try {
+    const data = await fs.readFile(LEADS_FILE, 'utf8');
+    return JSON.parse(data);
+  } catch (error) {
+    return [];
   }
-});
+}
 
-// Rotas principais
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
-});
-
-app.get('/landing.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'landing.html'));
-});
-
-// API - Salvar lead
-app.post('/api/leads', (req, res) => {
-  const { nome, email, whatsapp, cidade, formacao, objetivo, outros_objetivos } = req.body;
-  
-  const sql = `INSERT INTO leads (nome, email, whatsapp, cidade, formacao, objetivo, outros_objetivos) 
-               VALUES (?, ?, ?, ?, ?, ?, ?)`;
-  
-  db.run(sql, [nome, email, whatsapp, cidade, formacao, objetivo, outros_objetivos], function(err) {
-    if (err) {
-      console.error('Erro ao salvar lead:', err);
-      return res.status(500).json({ error: 'Erro ao salvar lead' });
-    }
-    res.json({ success: true, id: this.lastID });
-  });
-});
-
-// API - Buscar todos os leads
-app.get('/api/leads', (req, res) => {
-  const sql = 'SELECT * FROM leads ORDER BY created_at DESC';
-  
-  db.all(sql, [], (err, rows) => {
-    if (err) {
-      console.error('Erro ao buscar leads:', err);
-      return res.status(500).json({ error: 'Erro ao buscar leads' });
-    }
-    res.json(rows);
-  });
-});
+// Função para salvar leads
+async function saveLeads(leads) {
+  await fs.writeFile(LEADS_FILE, JSON.stringify(leads, null, 2));
+}
 
 // API - Login
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
   
-  if (username === 'admin' && password === 'otimizzai2025') {
-    req.session.authenticated = true;
-    res.json({ success: true });
+  if (username === ADMIN_USER && password === ADMIN_PASSWORD) {
+    res.json({ 
+      success: true, 
+      message: 'Login realizado com sucesso!' 
+    });
   } else {
-    res.status(401).json({ error: 'Credenciais inválidas' });
+    res.status(401).json({ 
+      success: false, 
+      message: 'Usuário ou senha incorretos' 
+    });
   }
 });
 
-// API - Logout
-app.post('/api/logout', (req, res) => {
-  req.session.destroy();
-  res.json({ success: true });
+// API - Salvar novo lead
+app.post('/api/leads', async (req, res) => {
+  try {
+    const newLead = {
+      ...req.body,
+      id: Date.now(),
+      timestamp: new Date().toISOString()
+    };
+
+    const leads = await readLeads();
+    leads.push(newLead);
+    await saveLeads(leads);
+
+    res.json({ success: true, message: 'Lead salvo com sucesso!' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Erro ao salvar lead' });
+  }
+});
+
+// API - Listar todos os leads
+app.get('/api/leads', async (req, res) => {
+  try {
+    const leads = await readLeads();
+    res.json(leads);
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Erro ao buscar leads' });
+  }
+});
+
+// Rota principal
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'landing.html'));
 });
 
 // Iniciar servidor
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor rodando na porta ${PORT}`);
+  console.log(`Servidor rodando na porta ${PORT}`);
 });

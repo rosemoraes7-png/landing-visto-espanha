@@ -1,66 +1,58 @@
+require('dotenv').config();
 const express = require('express');
+const path = require('path');
 const app = express();
-const PORT = 3000;
 
-// Middleware para processar JSON
-app.use(express.json());
-
-// Servir arquivos estáticos da pasta public
+// Middlewares
 app.use(express.static('public'));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json()); // ← IMPORTANTE: permite receber JSON
 
-// Array para armazenar os leads na memória (temporário)
-const leads = [];
+// "Banco de dados" temporário (em memória)
+let leads = [];
 
-// Rota para receber dados do formulário
-app.post('/api/leads', (req, res) => {
-    try {
-        const lead = {
-            id: Date.now(),
-            nome: req.body.nome,
-            email: req.body.email,
-            whatsapp: req.body.whatsapp,
-            profissao: req.body.profissao,
-            prazo: req.body.prazo,
-            data: new Date().toISOString()
-        };
-        
-        // Adiciona o lead ao array
-        leads.push(lead);
-        
-        console.log('✅ Novo lead cadastrado:');
-        console.log('Nome:', lead.nome);
-        console.log('Email:', lead.email);
-        console.log('WhatsApp:', lead.whatsapp);
-        console.log('Profissão:', lead.profissao);
-        console.log('Prazo:', lead.prazo);
-        console.log('----------------------------');
-        
-        res.json({ 
-            sucesso: true, 
-            mensagem: 'Lead cadastrado com sucesso!',
-            id: lead.id
-        });
-        
-    } catch (error) {
-        console.error('❌ Erro ao cadastrar lead:', error);
-        res.status(500).json({ 
-            sucesso: false, 
-            mensagem: 'Erro ao cadastrar lead' 
-        });
+// Rota: Página de Login
+app.get('/', (req, res) => {
+    res.sendFile(path.resolve('views/login.html'));
+});
+
+// Rota: Autenticação
+app.post('/login', (req, res) => {
+    const { usuario, senha } = req.body;
+    
+    if (usuario === process.env.USER && senha === process.env.PASS) {
+        res.sendFile(path.resolve('views/dashboard.html'));
+    } else {
+        res.send('<h2>Login inválido. <a href="/">Tente novamente</a></h2>');
     }
 });
 
-// Rota para listar todos os leads (útil para visualizar)
-app.get('/api/leads', (req, res) => {
-    res.json({
-        total: leads.length,
-        leads: leads
+// ✨ NOVA ROTA: Receber leads do formulário
+app.post('/api/leads', (req, res) => {
+    const novoLead = {
+        id: Date.now(),
+        dataHora: new Date().toLocaleString('pt-BR'),
+        ...req.body
+    };
+    
+    leads.push(novoLead);
+    
+    console.log('✅ Novo lead recebido:', novoLead);
+    
+    res.json({ 
+        success: true, 
+        message: 'Lead registrado com sucesso!',
+        lead: novoLead
     });
 });
 
-// Inicia o servidor
+// ✨ NOVA ROTA: Listar todos os leads (para o dashboard)
+app.get('/api/leads', (req, res) => {
+    res.json(leads);
+});
+
+// Iniciar servidor
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
-    console.log(`📄 Acesse a landing page: http://localhost:${PORT}/landing.html`);
-    console.log(`📊 Ver leads cadastrados: http://localhost:${PORT}/api/leads`);
 });

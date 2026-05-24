@@ -120,6 +120,11 @@
             transform: translateY(0);
         }
 
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
         .privacy-note {
             font-size: 12px;
             color: #888;
@@ -217,67 +222,80 @@
                 </select>
             </div>
 
-            <div class="form-group">
-                <label for="prazoMudanca">Quando pretende se mudar para a Espanha? <span class="required">*</span></label>
-                <select id="prazoMudanca" name="prazoMudanca" required>
-                    <option value="">Selecione</option>
-                    <option value="urgente">Nos próximos 3 meses</option>
-                    <option value="6-meses">Em 6 meses</option>
-                    <option value="1-ano">Em até 1 ano</option>
-                    <option value="sem-prazo">Ainda não defini</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="cidadaniaEuropeia">Tem cidadania europeia ou familiar direto (pais, avós) com cidadania? <span class="required">*</span></label>
-                <select id="cidadaniaEuropeia" name="cidadaniaEuropeia" required>
-                    <option value="">Selecione</option>
-                    <option value="sim-tenho">Sim, já tenho cidadania</option>
-                    <option value="familiar-tem">Sim, familiar direto tem</option>
-                    <option value="nao">Não</option>
-                </select>
-            </div>
-
-            <button type="submit" class="submit-btn">Receber Análise Gratuita</button>
+            <button type="submit" class="submit-btn">Solicitar Análise Gratuita</button>
 
             <p class="privacy-note">
-                🔒 Seus dados estão seguros. Não compartilhamos suas informações com terceiros.
+                🔒 Seus dados estão protegidos e serão utilizados apenas para contato sobre serviços de visto. Não compartilhamos suas informações com terceiros.
             </p>
         </form>
     </div>
 
     <script>
-        document.getElementById('leadForm').addEventListener('submit', async function(e) {
+        document.getElementById('leadForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData.entries());
+            const btnSubmit = document.querySelector('.submit-btn');
+            const textoOriginal = btnSubmit.textContent;
             
-            const submitBtn = this.querySelector('.submit-btn');
-            const originalText = submitBtn.textContent;
-            submitBtn.textContent = 'Enviando...';
-            submitBtn.disabled = true;
+            // Animação de carregamento
+            btnSubmit.textContent = '⏳ Enviando...';
+            btnSubmit.disabled = true;
+            
+            // Coletar dados do formulário
+            const formData = {
+                nomeCompleto: document.getElementById('nomeCompleto').value,
+                email: document.getElementById('email').value,
+                whatsapp: document.getElementById('whatsapp').value,
+                profissao: document.getElementById('profissao').value,
+                rendaMensal: document.getElementById('rendaMensal').value,
+                jaEstaEspanha: document.getElementById('jaEstaEspanha').value,
+                objetivo: document.getElementById('objetivo').value,
+                reservaFinanceira: document.getElementById('reservaFinanceira').value
+            };
             
             try {
-                const response = await fetch('/api/lead', {
+                // Enviar para o backend
+                const response = await fetch('/api/leads', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify(formData)
                 });
                 
-                if (response.ok) {
-                    alert('✅ Formulário enviado com sucesso! Entraremos em contato em breve.');
-                    this.reset();
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Sucesso!
+                    btnSubmit.textContent = '✅ Enviado com Sucesso!';
+                    btnSubmit.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+                    
+                    // Limpar formulário
+                    document.getElementById('leadForm').reset();
+                    
+                    // Mostrar mensagem
+                    alert('✅ Obrigado! Entraremos em contato em até 24 horas.');
+                    
+                    // Restaurar botão após 3 segundos
+                    setTimeout(() => {
+                        btnSubmit.textContent = textoOriginal;
+                        btnSubmit.style.background = 'linear-gradient(135deg, #AA151B 0%, #8B0000 100%)';
+                        btnSubmit.disabled = false;
+                    }, 3000);
                 } else {
                     throw new Error('Erro ao enviar');
                 }
+                
             } catch (error) {
-                alert('❌ Erro ao enviar o formulário. Por favor, tente novamente.');
-            } finally {
-                submitBtn.textContent = originalText;
-                submitBtn.disabled = false;
+                console.error('Erro:', error);
+                btnSubmit.textContent = '❌ Erro. Tente novamente';
+                btnSubmit.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+                
+                setTimeout(() => {
+                    btnSubmit.textContent = textoOriginal;
+                    btnSubmit.style.background = 'linear-gradient(135deg, #AA151B 0%, #8B0000 100%)';
+                    btnSubmit.disabled = false;
+                }, 3000);
             }
         });
     </script>

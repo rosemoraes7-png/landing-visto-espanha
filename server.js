@@ -29,7 +29,7 @@ const db = new sqlite3.Database('./leads.db', (err) => {
 
 // Rotas principais
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+    res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
 app.get('/landing.html', (req, res) => {

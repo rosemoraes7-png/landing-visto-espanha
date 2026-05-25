@@ -1,200 +1,448 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Leads Visto Espanha</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            width: 100%;
-            max-width: 1200px;
-            padding: 40px;
-        }
-        .login-box { max-width: 400px; margin: 0 auto; }
-        h1 { color: #333; margin-bottom: 30px; text-align: center; }
-        .form-group { margin-bottom: 20px; }
-        label {
-            display: block;
-            color: #555;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-        input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-        input:focus { outline: none; border-color: #667eea; }
-        button {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        button:hover { transform: translateY(-2px); }
-        .dashboard { display: none; }
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-        }
-        .stat-card h3 { font-size: 32px; margin-bottom: 5px; }
-        .stat-card p { font-size: 14px; opacity: 0.9; }
-        .actions { display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
-        .btn-export, .btn-logout {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            color: white;
-        }
-        .btn-export { background: #10b981; }
-        .btn-logout { background: #ef4444; }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        th { background: #f8f9fa; font-weight: 600; color: #333; }
-        tr:hover { background: #f8f9fa; }
-        .error { color: #ef4444; text-align: center; margin-top: 10px; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Visto Espanha</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: white;
+      padding: 20px 30px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #333;
+      font-size: 28px;
+    }
+
+    .logout-btn {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+
+    .logout-btn:hover {
+      background: #c82333;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .stat-card h3 {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    .stat-card .number {
+      color: #667eea;
+      font-size: 36px;
+      font-weight: bold;
+    }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .chart-card {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .chart-card h3 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+
+    .controls {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .export-btn {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+
+    .export-btn:hover {
+      background: #218838;
+    }
+
+    .table-container {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background: #667eea;
+      color: white;
+      font-weight: 600;
+    }
+
+    tr:hover {
+      background: #f5f5f5;
+    }
+
+    @media (max-width: 768px) {
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .header {
+        flex-direction: column;
+        gap: 15px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div id="loginBox" class="login-box">
-            <h1>🔐 Login Dashboard</h1>
-            <div class="form-group">
-                <label>Usuário</label>
-                <input type="text" id="username" placeholder="Digite o usuário">
-            </div>
-            <div class="form-group">
-                <label>Senha</label>
-                <input type="password" id="password" placeholder="Digite a senha">
-            </div>
-            <button onclick="login()">Entrar</button>
-            <div id="loginError" class="error"></div>
-        </div>
-
-        <div id="dashboard" class="dashboard">
-            <h1>📊 Dashboard de Leads</h1>
-            <div class="stats">
-                <div class="stat-card">
-                    <h3 id="totalLeads">0</h3>
-                    <p>Total de Leads</p>
-                </div>
-                <div class="stat-card">
-                    <h3 id="leadsHoje">0</h3>
-                    <p>Leads Hoje</p>
-                </div>
-            </div>
-            <div class="actions">
-                <button class="btn-export" onclick="exportCSV()">📥 Exportar CSV</button>
-                <button class="btn-logout" onclick="logout()">🚪 Sair</button>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Email</th>
-                        <th>WhatsApp</th>
-                        <th>Cidade</th>
-                        <th>Formação</th>
-                        <th>Objetivo</th>
-                        <th>Data</th>
-                    </tr>
-                </thead>
-                <tbody id="leadsTable"></tbody>
-            </table>
-        </div>
+  <div class="container">
+    <div class="header">
+      <h1>📊 Dashboard - Leads Visto Espanha</h1>
+      <button class="logout-btn" onclick="logout()">🚪 Sair</button>
     </div>
 
-    <script>
-        async function login() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const errorDiv = document.getElementById('loginError');
-            try {
-                const response = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
-                });
-                if (response.ok) {
-                    document.getElementById('loginBox').style.display = 'none';
-                    document.getElementById('dashboard').style.display = 'block';
-                    loadLeads();
-                } else {
-                    errorDiv.textContent = 'Usuário ou senha incorretos';
-                }
-            } catch (error) {
-                errorDiv.textContent = 'Erro ao fazer login';
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>Total de Leads</h3>
+        <div class="number" id="totalLeads">0</div>
+      </div>
+      <div class="stat-card">
+        <h3>Leads Hoje</h3>
+        <div class="number" id="leadsToday">0</div>
+      </div>
+      <div class="stat-card">
+        <h3>Esta Semana</h3>
+        <div class="number" id="leadsWeek">0</div>
+      </div>
+      <div class="stat-card">
+        <h3>Este Mês</h3>
+        <div class="number" id="leadsMonth">0</div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3>📅 Leads por Dia (Últimos 7 dias)</h3>
+        <canvas id="dailyChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>📊 Leads por Semana (Últimas 4 semanas)</h3>
+        <canvas id="weeklyChart"></canvas>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="export-btn" onclick="exportToCSV()">📥 Exportar CSV</button>
+    </div>
+
+    <div class="table-container">
+      <h3 style="margin-bottom: 20px; color: #333;">📋 Todos os Leads</h3>
+      <table id="leadsTable">
+        <thead>
+          <tr>
+            <th>Data/Hora</th>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Telefone</th>
+            <th>Tipo de Visto</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    let allLeads = [];
+    let dailyChart = null;
+    let weeklyChart = null;
+
+    // Verificar login
+    if (!sessionStorage.getItem('loggedIn')) {
+      window.location.href = 'dashboard.html';
+    }
+
+    // Carregar leads
+    async function loadLeads() {
+      try {
+        const response = await fetch('/api/leads');
+        allLeads = await response.json();
+        updateStats();
+        updateCharts();
+        updateTable();
+      } catch (error) {
+        console.error('Erro ao carregar leads:', error);
+      }
+    }
+
+    // Atualizar estatísticas
+    function updateStats() {
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+      const leadsToday = allLeads.filter(lead => {
+        const leadDate = new Date(lead.timestamp);
+        return leadDate >= today;
+      }).length;
+
+      const leadsWeek = allLeads.filter(lead => {
+        const leadDate = new Date(lead.timestamp);
+        return leadDate >= weekAgo;
+      }).length;
+
+      const leadsMonth = allLeads.filter(lead => {
+        const leadDate = new Date(lead.timestamp);
+        return leadDate >= monthAgo;
+      }).length;
+
+      document.getElementById('totalLeads').textContent = allLeads.length;
+      document.getElementById('leadsToday').textContent = leadsToday;
+      document.getElementById('leadsWeek').textContent = leadsWeek;
+      document.getElementById('leadsMonth').textContent = leadsMonth;
+    }
+
+    // Atualizar gráficos
+    function updateCharts() {
+      updateDailyChart();
+      updateWeeklyChart();
+    }
+
+    // Gráfico de leads por dia (últimos 7 dias)
+    function updateDailyChart() {
+      const ctx = document.getElementById('dailyChart').getContext('2d');
+      const last7Days = [];
+      const leadCounts = [];
+
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        const dateStr = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+        last7Days.push(dateStr);
+
+        const count = allLeads.filter(lead => {
+          const leadDate = new Date(lead.timestamp);
+          return leadDate.toDateString() === date.toDateString();
+        }).length;
+        leadCounts.push(count);
+      }
+
+      if (dailyChart) dailyChart.destroy();
+
+      dailyChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: last7Days,
+          datasets: [{
+            label: 'Leads por Dia',
+            data: leadCounts,
+            borderColor: '#667eea',
+            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+            tension: 0.4,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false
             }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1
+              }
+            }
+          }
         }
+      });
+    }
 
-        async function loadLeads() {
-            const response = await fetch('/api/leads');
-            const leads = await response.json();
-            document.getElementById('totalLeads').textContent = leads.length;
-            const hoje = new Date().toISOString().split('T')[0];
-            const leadsHoje = leads.filter(l => l.created_at.startsWith(hoje));
-            document.getElementById('leadsHoje').textContent = leadsHoje.length;
-            document.getElementById('leadsTable').innerHTML = leads.map(lead => `
-                <tr>
-                    <td>${lead.nome}</td>
-                    <td>${lead.email}</td>
-                    <td>${lead.whatsapp}</td>
-                    <td>${lead.cidade}</td>
-                    <td>${lead.formacao}</td>
-                    <td>${lead.objetivo}</td>
-                    <td>${new Date(lead.created_at).toLocaleString('pt-BR')}</td>
-                </tr>
-            `).join('');
-        }
+    // Gráfico de leads por semana (últimas 4 semanas)
+    function updateWeeklyChart() {
+      const ctx = document.getElementById('weeklyChart').getContext('2d');
+      const weeks = [];
+      const leadCounts = [];
 
-        function exportCSV() {
-            window.location.href = '/api/export';
-        }
+      for (let i = 3; i >= 0; i--) {
+        const endDate = new Date();
+        endDate.setDate(endDate.getDate() - (i * 7));
+        const startDate = new Date(endDate);
+        startDate.setDate(startDate.getDate() - 6);
 
-        function logout() {
-            window.location.reload();
+        const weekLabel = `${startDate.getDate()}/${startDate.getMonth() + 1} - ${endDate.getDate()}/${endDate.getMonth() + 1}`;
+        weeks.push(weekLabel);
+
+        const count = allLeads.filter(lead => {
+          const leadDate = new Date(lead.timestamp);
+          return leadDate >= startDate && leadDate <= endDate;
+        }).length;
+        leadCounts.push(count);
+      }
+
+      if (weeklyChart) weeklyChart.destroy();
+
+      weeklyChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: weeks,
+          datasets: [{
+            label: 'Leads por Semana',
+            data: leadCounts,
+            backgroundColor: '#764ba2',
+            borderColor: '#764ba2',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1
+              }
+            }
+          }
         }
-    </script>
+      });
+    }
+
+    // Atualizar tabela
+    function updateTable() {
+      const tbody = document.querySelector('#leadsTable tbody');
+      tbody.innerHTML = '';
+
+      allLeads.reverse().forEach(lead => {
+        const row = tbody.insertRow();
+        const date = new Date(lead.timestamp);
+        
+        row.innerHTML = `
+          <td>${date.toLocaleString('pt-BR')}</td>
+          <td>${lead.nome}</td>
+          <td>${lead.email}</td>
+          <td>${lead.telefone}</td>
+          <td>${lead.tipoVisto}</td>
+        `;
+      });
+    }
+
+    // Exportar CSV
+    function exportToCSV() {
+      const headers = ['Data/Hora', 'Nome', 'Email', 'Telefone', 'Tipo de Visto'];
+      const rows = allLeads.map(lead => [
+        new Date(lead.timestamp).toLocaleString('pt-BR'),
+        lead.nome,
+        lead.email,
+        lead.telefone,
+        lead.tipoVisto
+      ]);
+
+      let csvContent = headers.join(',') + '\n';
+      rows.forEach(row => {
+        csvContent += row.join(',') + '\n';
+      });
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `leads_${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+    }
+
+    // Logout
+    function logout() {
+      sessionStorage.removeItem('loggedIn');
+      window.location.href = 'dashboard.html';
+    }
+
+    // Carregar dados ao iniciar
+    loadLeads();
+
+    // Atualizar a cada 30 segundos
+    setInterval(loadLeads, 30000);
+  </script>
 </body>
 </html>
